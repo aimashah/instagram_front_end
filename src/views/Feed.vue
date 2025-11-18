@@ -26,6 +26,11 @@
       <strong>{{ c.user.name }}</strong> <span>{{ c.text }}</span>
       </p>
      </div>
+     <!-- Share BUTTON -->
+      <button class="share-btn" @click="sharePost(post)">🔄 Share</button>
+      <p v-if="post.shares.length > 0" class="shared-by">
+      Shared by: {{ post.shares.join(", ") }}
+      </p>
 
 
       <!-- ADD COMMENT -->
@@ -78,8 +83,14 @@ export default {
     console.error("Error toggling like:", error.response?.data || error);
   }
 },
-
-
+  async sharePost(post) {
+  try {
+    const res = await api.post(`/posts/${post.id}/share`);
+    alert("Post shared!");
+  } catch (error) {
+    console.error("Error sharing post:", error.response?.data || error);
+  }
+},
   async addComment(post) {
   if (!post.newComment.trim()) return;  // Check if comment is not empty
 
