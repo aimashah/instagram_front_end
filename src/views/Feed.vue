@@ -17,8 +17,13 @@
         {{ post.likes_count }} Likes
       </button>
 
-
       <p class="likes-count">{{ post.likes_count }} likes</p>
+
+       <!-- Users who liked the post -->
+      <p v-if="post.users_who_liked && post.users_who_liked.length > 0">
+        Liked by: {{ post.users_who_liked.join(', ') }}
+      </p>
+
 
       <!-- COMMENTS SECTION -->
       <div class="comments-box">
@@ -26,13 +31,14 @@
       <strong>{{ c.user.name }}</strong> <span>{{ c.text }}</span>
       </p>
      </div>
-     <!-- Share BUTTON -->
+      <!-- Share BUTTON -->
       <button class="share-btn" @click="sharePost(post)">🔄 Share</button>
       <p v-if="post.shares.length > 0" class="shared-by">
       Shared by: {{ post.shares.join(", ") }}
       </p>
-
-
+      <button class="message-btn" @click="openChat(post.user.id)">
+        💬 Message {{ post.user.name }}
+      </button>
       <!-- ADD COMMENT -->
       <form @submit.prevent="addComment(post)" class="comment-form">
         <input 
@@ -46,7 +52,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import api from "../api/axios";
 
@@ -64,25 +69,22 @@ export default {
       newComment: "",
       comments: p.comments || [],
       liked: p.liked || false,
-      likes_count: p.likes_count || 0
+      likes_count: p.likes_count || 0,
+      shares: p.shares || []
     }));
   },
+   methods: {
+    async toggleLike(post) {
+      try {
+        const res = await api.post(`/posts/${post.id}/like`);
+        post.liked = res.data.liked;
+        post.likes_count = res.data.likes_count;
+        post.users_who_liked = res.data.users_who_liked;
+      } catch (error) {
+        console.error("Error toggling like:", error.response?.data || error);
+      }
+    },
 
-  methods: {
-  async toggleLike(post) {
-  try {
-    const res = await api.post(`/posts/${post.id}/like`);
-
-    // After toggling like, update the post's liked status and the likes count
-    post.liked = res.data.liked;
-    post.likes_count = res.data.likes_count;
-
-    // Optionally, you can change the button text here if needed:
-    // this.updateButtonText(post);
-  } catch (error) {
-    console.error("Error toggling like:", error.response?.data || error);
-  }
-},
   async sharePost(post) {
   try {
     const res = await api.post(`/posts/${post.id}/share`);
@@ -91,6 +93,9 @@ export default {
     console.error("Error sharing post:", error.response?.data || error);
   }
 },
+  openChat(userId) {
+    this.$router.push({ path: "/inbox", query: { receiverId: userId } });
+  },
   async addComment(post) {
   if (!post.newComment.trim()) return;  // Check if comment is not empty
 
@@ -198,5 +203,19 @@ export default {
   color: white;
   border: none;
   border-radius: 6px;
+}
+
+.message-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fefefe;
+  cursor: pointer;
+}
+
+.message-btn:hover {
+  background: #f5f5f5;
 }
 </style>

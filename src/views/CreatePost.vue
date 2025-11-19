@@ -24,7 +24,7 @@ export default {
     async createPost() {
   const formData = new FormData();
   formData.append("caption", this.caption);
-  formData.append("image", this.image);  // <-- must be the actual File object
+  formData.append("image", this.image); 
 
   try {
     const res = await api.post("/posts", formData, {

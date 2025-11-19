@@ -5,6 +5,7 @@
     <div>
       <router-link to="/">Home</router-link>
       <router-link to="/create-post">Create Post</router-link>
+      <router-link to="/inbox">Inbox</router-link>
 
       <button @click="logout" style="width:auto; padding:6px 12px; margin-left:10px; background:#ff3b3b;">
         Logout

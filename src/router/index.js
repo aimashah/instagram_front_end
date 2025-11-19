@@ -4,10 +4,12 @@ import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
 import Feed from "../views/Feed.vue";
 import CreatePost from "../views/CreatePost.vue";
+import Inbox from "../views/Inbox.vue";
 
 const routes = [
   { path: "/login", component: Login },
   { path: "/signup", component: Signup },
+  { path: "/inbox", component: Inbox, meta: { requiresAuth: true } },
 
   {
     path: "/",
